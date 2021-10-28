@@ -131,7 +131,7 @@ namespace API.Controllers
         }
         #endregion Constructor
 
-
+        #region Public methods
         //Get all employees
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
@@ -152,18 +152,6 @@ namespace API.Controllers
         //    return Ok(employee);
         //}
 
-        //Search employee by name
-        //[HttpGet("{search}")]
-        //public async Task<ActionResult<IEnumerable<Employee>>> Search(string name, string department)
-        //{
-        //    var employee = await _context.Search(name, department);
-        //    if (employee.Count() == 0)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(employee);
-        //}
 
         [HttpGet("filter")]
         public async Task<ActionResult<IEnumerable<Employee>>> Search(string name)
@@ -209,7 +197,6 @@ namespace API.Controllers
             await _employeeService.Delete(employee);
             return NoContent();
         }
-        
-
+        #endregion Public methods
     }
 }

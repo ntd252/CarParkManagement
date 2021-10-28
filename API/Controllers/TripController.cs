@@ -28,7 +28,7 @@ namespace API.Controllers
         #endregion Constructor
 
         #region Pulic methods
-        //Get all booking offices
+        //Get all trips
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Trip>>> GetTrips()
         {

@@ -39,7 +39,7 @@ namespace API.Controllers
         [HttpGet("trip")]
         public async Task<ActionResult<IEnumerable<BookingOffice>>> GetBookingOfficesWithTrip()
         {
-            return Ok(await _bookingOfficeService.GetAllWithTrip());
+            return Ok(await _bookingOfficeService.GetAllWithForeignKey());
         }
 
         [HttpGet("filter")]
