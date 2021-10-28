@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Model.DBContext;
 using Model.Entity;
+using Model.Repository;
 using Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -14,14 +15,13 @@ namespace Services.Implementation
     public class BookingOfficeService : IBookingOffice
     {
         #region Properties
-        private readonly CarParkDbContext _context;
+        private readonly IGenericRepository<BookingOffice> _bookingOfficeRepository;
         #endregion Properties
 
         #region Constructor
-        public BookingOfficeService(CarParkDbContext context)
+        public BookingOfficeService(IGenericRepository<BookingOffice> bookingOfficeRepository)
         {
-            _context = context;
-
+            _bookingOfficeRepository = bookingOfficeRepository;
         }
         #endregion Constructor
 
@@ -29,31 +29,73 @@ namespace Services.Implementation
 
         public async Task<IEnumerable<BookingOffice>> GetAll()
         {
-            return await _context.BookingOffices.Include(b => b.Trip).ToListAsync();
+            return await _bookingOfficeRepository.GetAll();
         }
+
+        public async Task<IEnumerable<BookingOffice>> GetAllWithForeignKey()
+        {
+            return await _bookingOfficeRepository.GetAllQuery().Include(b => b.Trip).ToListAsync();
+        }
+
 
         public async Task<BookingOffice> GetById(int id)
         {
-            BookingOffice bookingOffice = await _context.BookingOffices.FindAsync(id);
-            return bookingOffice;
+            return await _bookingOfficeRepository.GetById(id);
         }
 
-        public async Task<IEnumerable<BookingOffice>> Search(string name, string trip)
+        public async Task<IEnumerable<BookingOffice>> Search(string name)
         {
-            IQueryable<BookingOffice> query = _context.BookingOffices;
+            var query = _bookingOfficeRepository.GetAllQuery();
+            query = query.Where(b => b.OfficeName.Contains(name));
+            return await query.ToListAsync();
+        }
 
-            if (!string.IsNullOrEmpty(name))
+        public async Task<bool> Update(BookingOffice bookingOffice)
+        {
+            try
             {
-                query = query.Where(b => b.OfficeName == name);
+                await _bookingOfficeRepository.Update(bookingOffice);
             }
-
-            return await query.Include(b => b.Trip).ToListAsync();
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!(await Exists(bookingOffice.Id)))
+                {
+                    return false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            await _bookingOfficeRepository.Save();
+            return true;
         }
 
         public async Task Insert(BookingOffice bookingOffice)
         {
-            _context.BookingOffices.Add(bookingOffice);
-            await _context.SaveChangesAsync();
+            BookingOffice bo = new BookingOffice();
+            Trip existingTrip = new Trip();
+            existingTrip = bookingOffice.Trip;
+            bo.Trip = existingTrip;
+            
+            await _bookingOfficeRepository.Insert(bookingOffice);
+            await _bookingOfficeRepository.Save();
+
+        }
+
+        public async Task Delete(BookingOffice bookingOffice)
+        {
+            await _bookingOfficeRepository.Delete(bookingOffice);
+            await _bookingOfficeRepository.Save();
+        }
+
+        public async Task<bool> Exists(int id)
+        {
+            BookingOffice bookingOffice = await _bookingOfficeRepository.GetById(id);
+            if (bookingOffice == null)
+                return false;
+            else
+                return true;
         }
 
         #endregion Public methods

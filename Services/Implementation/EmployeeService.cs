@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Model.DBContext;
 using Model.Entity;
+using Model.Repository;
 using Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -14,71 +15,92 @@ namespace Services.Implementation
     public class EmployeeService : IEmployee
     {
         #region Properties
-        private readonly CarParkDbContext _context;
+        private readonly IGenericRepository<Employee> _employeeRepository;
         #endregion Properties
 
         #region Constructor
-        public EmployeeService(CarParkDbContext context)
+        public EmployeeService(IGenericRepository<Employee> employeeRepository)
         {
-            _context = context;
-
+            _employeeRepository = employeeRepository;
         }
         #endregion Constructor
 
         #region Public methods
         public async Task<IEnumerable<Employee>> GetAll()
         {
-            return await _context.Employees.ToListAsync();
+            return await _employeeRepository.GetAll();
         }
 
         public async Task<Employee> GetById(int id)
         {
-            Employee employee = await _context.Employees.FindAsync(id);
-            return employee;
+            return await _employeeRepository.GetById(id);
         }
 
-        public async Task<IEnumerable<Employee>> Search(string name, string department)
+        public async Task<IEnumerable<Employee>> Search(string name)
         {
-            IQueryable<Employee> query = _context.Employees;
-
-            if (!string.IsNullOrEmpty(name))
-            {
-                query = query.Where(e => e.FullName == name);
-            }
-
-            if (!string.IsNullOrEmpty(department))
-            {
-                query = query.Where(e => e.Department == department);
-            }
-
+            var query = _employeeRepository.GetAllQuery();
+            query = query.Where(e => e.FullName.Contains(name));
             return await query.ToListAsync();
         }
 
-        public async Task Update(Employee employee)
-        {
-            _context.Entry(employee).State = EntityState.Modified;
-            
+        //public async Task<IEnumerable<Employee>> Search(string name, string department)
+        //{
+        //    IQueryable<Employee> query = _context.Employees;
 
-           await _context.SaveChangesAsync();
-            
+        //    if (!string.IsNullOrEmpty(name))
+        //    {
+        //        query = query.Where(e => e.FullName == name);
+        //    }
+
+        //    if (!string.IsNullOrEmpty(department))
+        //    {
+        //        query = query.Where(e => e.Department == department);
+        //    }
+
+        //    return await query.ToListAsync();
+        //}
+
+        public async Task<bool> Update(Employee employee)
+        {
+            try
+            {
+                await _employeeRepository.Update(employee);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!(await Exists(employee.Id)))
+                {
+                    return false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            await _employeeRepository.Save();
+            return true;            
         }
 
         public async Task Insert(Employee employee)
         {
-            _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
+            await _employeeRepository.Insert(employee);
+            await _employeeRepository.Save();
 
         }
 
         public async Task Delete(Employee employee)
         {
-            _context.Employees.Remove(employee);
-            await _context.SaveChangesAsync();
+            await _employeeRepository.Delete(employee);
+            await _employeeRepository.Save();
         }
 
-        public bool EmployeeExists(int id)
+        public async Task<bool> Exists(int id)
         {
-            return _context.Employees.Any(e => e.Id == id);
+            Employee employee = await _employeeRepository.GetById(id);
+            if (employee == null)
+                return false;
+            else
+                return true;
         }
 
         #endregion Public methods

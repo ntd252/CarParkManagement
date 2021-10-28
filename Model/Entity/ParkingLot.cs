@@ -14,5 +14,7 @@ namespace Model.Entity
         public string Area { get; set; }
         public string Status { get; set; }
         public int Price { get; set; }
+
+        public List<Car> Cars { get; set; }
     }
 }

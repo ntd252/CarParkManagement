@@ -2,6 +2,7 @@
 using Model.DBContext;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,9 +27,19 @@ namespace Model.Repository
             return await _context.Set<TEntity>().ToListAsync();
         }
 
+        public IQueryable<TEntity> GetAllQuery()
+        {
+            return _context.Set<TEntity>();
+        }
+
         public async Task<TEntity> GetById(int id)
         {
             return await _context.Set<TEntity>().FindAsync(id);
+        }
+
+        public async Task<TEntity> GetByKey(string key)
+        {
+            return await _context.Set<TEntity>().FindAsync(key);
         }
 
         public async Task Insert(TEntity entity)
@@ -49,6 +60,11 @@ namespace Model.Repository
         public async Task Save()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> Exist(int id)
+        {
+            return await _context.Set<TEntity>().AnyAsync();
         }
         #endregion Public Methods
     }
