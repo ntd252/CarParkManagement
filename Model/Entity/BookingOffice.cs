@@ -22,6 +22,7 @@ namespace Model.Entity
         [Column(TypeName = "nvarchar(50)")]
         public string Place { get; set; }
 
+        [Column(TypeName = "nvarchar(50)")]
         public int Price { get; set; }
         public DateTime ContractStarts { get; set; }
         public DateTime ContractEnds { get; set; }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Model.Common;
 using Model.Entity;
 using Services.Interface;
 using System;
@@ -37,9 +38,9 @@ namespace API.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<ActionResult<IEnumerable<ParkingLot>>> Search(string name)
+        public async Task<ActionResult<IEnumerable<ParkingLot>>> Search([FromQuery] Request request)
         {
-            return Ok(await _parkingLotService.Search(name));
+            return Ok(await _parkingLotService.Search(request));
         }
 
         //Update ParkingLot

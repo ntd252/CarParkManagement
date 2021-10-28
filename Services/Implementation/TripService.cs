@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Model.Common;
 using Model.DBContext;
 using Model.Entity;
 using Model.Repository;
@@ -36,10 +37,24 @@ namespace Services.Implementation
             return await _tripRepository.GetById(id);
         }
 
-        public async Task<IEnumerable<Trip>> Search(string name)
+        public async Task<IEnumerable<Trip>> Search(Request request)
         {
             var query = _tripRepository.GetAllQuery();
-            query = query.Where(e => e.Destination.Contains(name));
+            switch (request.Field.ToLower())
+            {
+                case "destination":
+                    query = query.Where(b => b.Destination.Contains(request.Keyword.ToLower()));
+                    break;
+                case "driver":
+                    query = query.Where(b => b.Driver.Contains(request.Keyword.ToLower()));
+                    break;
+                case "departure":
+                    query = query.Where(b => b.DepartureDate.Date == request.Date.Date);
+                    break;
+                default:
+                    return null;
+            }
+
             return await query.ToListAsync();
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Model.Common;
 using Model.DBContext;
 using Model.Entity;
 using Model.Repository;
@@ -36,10 +37,24 @@ namespace Services.Implementation
             return await _employeeRepository.GetById(id);
         }
 
-        public async Task<IEnumerable<Employee>> Search(string name)
+        public async Task<IEnumerable<Employee>> Search(Request request)
         {
             var query = _employeeRepository.GetAllQuery();
-            query = query.Where(e => e.FullName.Contains(name));
+            switch (request.Field.ToLower())
+            {
+                case "name":
+                    query = query.Where(e => e.FullName.Contains(request.Keyword));
+                    break;
+                case "department":
+                    query = query.Where(e => e.Department.Contains(request.Keyword));
+                    break;
+                case "address":
+                    query = query.Where(e => e.Address.Contains(request.Keyword));
+                    break;
+                default:
+                    break;
+            }
+            
             return await query.ToListAsync();
         }
 

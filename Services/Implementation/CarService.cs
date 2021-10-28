@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Model.Common;
 using Model.DBContext;
 using Model.Entity;
 using Model.Repository;
@@ -42,10 +43,27 @@ namespace Services.Implementation
             return await _carRepository.GetByKey(licensePlate);
         }
 
-        public async Task<IEnumerable<Car>> Search(string name)
+        public async Task<IEnumerable<Car>> Search(Request request)
         {
             var query = _carRepository.GetAllQuery();
-            query = query.Where(c => c.Type.Contains(name));
+            switch (request.Field.ToLower())
+            {
+                case "licenseplate":
+                    query = query.Where(b => b.LicensePlate.Contains(request.Keyword));
+                    break;
+                case "type":
+                    query = query.Where(b => b.Type.Contains(request.Keyword));
+                    break;
+                case "company":
+                    query = query.Where(b => b.Company.Contains(request.Keyword));
+                    break;
+                case "parking":
+                    query = query.Where(b => b.ParkingLot.Name.Contains(request.Keyword));
+                    break;
+                default:
+                    return null;
+            }
+
             return await query.ToListAsync();
         }
 

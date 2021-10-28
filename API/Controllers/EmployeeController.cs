@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Model.Common;
 using Model.DBContext;
 using Model.DTO;
 using Model.Entity;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     #region code1
@@ -154,9 +155,9 @@ namespace API.Controllers
 
 
         [HttpGet("filter")]
-        public async Task<ActionResult<IEnumerable<Employee>>> Search(string name)
+        public async Task<ActionResult<IEnumerable<Employee>>> Search([FromQuery] Request request)
         {
-            return Ok(await _employeeService.Search(name));
+            return Ok(await _employeeService.Search(request));
         }
 
         //Update Employee

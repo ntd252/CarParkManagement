@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Model.Common;
 using Model.Entity;
 using Services.Interface;
 using System;
@@ -43,9 +44,9 @@ namespace API.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<ActionResult<IEnumerable<BookingOffice>>> Search(string name)
+        public async Task<ActionResult<IEnumerable<BookingOffice>>> Search([FromQuery] Request request)
         {
-            return Ok(await _bookingOfficeService.Search(name));
+            return Ok(await _bookingOfficeService.Search(request));
         }
 
         //Update BookingOffice

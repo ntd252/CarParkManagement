@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Model.Common;
 using Model.DBContext;
 using Model.Entity;
 using Model.Repository;
@@ -36,10 +37,24 @@ namespace Services.Implementation
             return await _parkingLotRepository.GetById(id);
         }
 
-        public async Task<IEnumerable<ParkingLot>> Search(string name)
+        public async Task<IEnumerable<ParkingLot>> Search(Request request)
         {
             var query = _parkingLotRepository.GetAllQuery();
-            query = query.Where(p => p.Name.Contains(name));
+            switch (request.Field.ToLower())
+            {
+                case "name":
+                    query = query.Where(b => b.Name.Contains(request.Keyword));
+                    break;
+                case "place":
+                    query = query.Where(b => b.Place.Contains(request.Keyword));
+                    break;
+                case "area":
+                    query = query.Where(b => b.Area.Contains(request.Keyword));
+                    break;
+                default:
+                    return null;
+            }
+
             return await query.ToListAsync();
         }
 

@@ -18,6 +18,7 @@ namespace Model.Entity
         [Column(TypeName = "nvarchar(50)")]
         public string Color { get; set; }
 
+        [Required]
         [Column(TypeName = "nvarchar(50)")]
         public string Company { get; set; }
 

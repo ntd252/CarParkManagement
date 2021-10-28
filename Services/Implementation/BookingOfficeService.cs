@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Model.Common;
 using Model.DBContext;
 using Model.Entity;
 using Model.Repository;
@@ -43,11 +44,22 @@ namespace Services.Implementation
             return await _bookingOfficeRepository.GetById(id);
         }
 
-        public async Task<IEnumerable<BookingOffice>> Search(string name)
+        public async Task<IEnumerable<BookingOffice>> Search(Request request)
         {
             var query = _bookingOfficeRepository.GetAllQuery();
-            query = query.Where(b => b.OfficeName.Contains(name));
-            return await query.ToListAsync();
+            switch (request.Field.ToLower())
+            {
+                case "name":
+                    query = query.Where(b => b.OfficeName.Contains(request.Keyword));
+                    break;
+                case "trip":
+                    query = query.Where(b => b.Trip.Destination.Contains(request.Keyword));
+                    break;
+                default:
+                    return null;
+            }
+
+            return await query.Include(b => b.Trip).ToListAsync();
         }
 
         public async Task<bool> Update(BookingOffice bookingOffice)

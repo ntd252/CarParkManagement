@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Model.Common;
 using Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -22,15 +23,15 @@ namespace API.Controllers
         }
 
 
-        //// POST api/<LoginController>
-        //[AllowAnonymous]
-        //[HttpPost("authentication")]
-        //public IActionResult Authentication([FromBody] UserCredential userCredential)
-        //{
-        //    var token = _jwtAuth.Authentication(userCredential.Username, userCredential.Password);
-        //    if (token == null)
-        //        return Unauthorized();
-        //    return Ok(token);
-        //}
+        // POST api/authentication/login
+        [AllowAnonymous]
+        [HttpPost("logic")]
+        public IActionResult Authentication([FromBody] UserCredential userCredential)
+        {
+            var token = _jwtAuth.Authentication(userCredential.Username, userCredential.Password);
+            if (token == null)
+                return Unauthorized();
+            return Ok(token);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Model.Common;
 using Model.Entity;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace Services.Interface
         public Task<IEnumerable<BookingOffice>> GetAll();
         public Task<IEnumerable<BookingOffice>> GetAllWithForeignKey();
         public Task<BookingOffice> GetById(int id);
-        public Task<IEnumerable<BookingOffice>> Search(string name);
+        public Task<IEnumerable<BookingOffice>> Search(Request request);
         public Task<bool> Update(BookingOffice bookingOffice);
         public Task Insert(BookingOffice bookingOffice);
         public Task Delete(BookingOffice bookingOffice);

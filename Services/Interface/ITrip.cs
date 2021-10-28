@@ -1,4 +1,5 @@
-﻿using Model.Entity;
+﻿using Model.Common;
+using Model.Entity;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Services.Interface
     {
         public Task<IEnumerable<Trip>> GetAll();
         public Task<Trip> GetById(int id);
-        public Task<IEnumerable<Trip>> Search(string name);
+        public Task<IEnumerable<Trip>> Search(Request request);
         public Task<bool> Update(Trip trip);
         public Task Insert(Trip trip);
         public Task Delete(Trip trip);

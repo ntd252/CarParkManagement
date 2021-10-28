@@ -17,6 +17,9 @@ using Services.Implementation;
 using Services.Interface;
 using Model.Repository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace API
 {
@@ -41,6 +44,25 @@ namespace API
                     .EnableSensitiveDataLogging()
             );
 
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetValue<string>("Authentication:Key")))
+                };
+            });
+
+            
+            services.AddSingleton<IAuthentication>(new AuthenticationService(Configuration.GetValue<string>("Authentication:Key")));
 
             services.AddSwaggerGen(c =>
             {
@@ -77,7 +99,7 @@ namespace API
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            //services.AddTransient<IAuthentication, AuthenticationService>();
+            
             services.AddTransient<IBookingOffice, BookingOfficeService>();
             services.AddTransient<ICar, CarService>();
             services.AddTransient<IEmployee, EmployeeService>();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Model.Common;
 using Model.Entity;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Services.Interface
     {
         public Task<IEnumerable<Employee>> GetAll();
         public Task<Employee> GetById(int id);
-        public Task<IEnumerable<Employee>> Search(string name);
+        public Task<IEnumerable<Employee>> Search(Request request);
         public Task<bool> Update(Employee employee);
         public Task Insert(Employee employee);
         public Task Delete(Employee employee);

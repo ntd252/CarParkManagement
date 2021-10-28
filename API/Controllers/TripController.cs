@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Model.Common;
 using Model.Entity;
 using Services.Interface;
 using System;
@@ -38,9 +39,9 @@ namespace API.Controllers
 
 
         [HttpGet("filter")]
-        public async Task<ActionResult<IEnumerable<Trip>>> Search(string name)
+        public async Task<ActionResult<IEnumerable<Trip>>> Search([FromQuery] Request request)
         {
-            return Ok(await _tripService.Search(name));
+            return Ok(await _tripService.Search(request));
         }
 
         //Update Trip

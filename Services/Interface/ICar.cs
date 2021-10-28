@@ -1,4 +1,5 @@
-﻿using Model.Entity;
+﻿using Model.Common;
+using Model.Entity;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +12,7 @@ namespace Services.Interface
         public Task<IEnumerable<Car>> GetAll();
         public Task<IEnumerable<Car>> GetAllWithForeignKey();
         public Task<Car> GetById(string licensePlate);
-        public Task<IEnumerable<Car>> Search(string name);
+        public Task<IEnumerable<Car>> Search(Request request);
         public Task<bool> Update(Car car);
         public Task Insert(Car car);
         public Task Delete(Car car);
